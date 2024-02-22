@@ -7,9 +7,6 @@ from tkinter import colorchooser
 
 from text_painter import TextPainter
 
-# GUI will hold 2 text windows, one for input and one for display
-# GUI will also include a widget for adding colors to a list for use during display
-
 class TextEditor:
     def __init__(self, root):
         self.palette_window = None
@@ -40,6 +37,49 @@ class TextEditor:
         
         self.root.bind("<KeyRelease>", self.key_released)
         
+        # Experimental Button for animating
+        self.animate_button = Button(self.user_options_frame, text="Animate", command=self.animate, bg="green")
+        self.animate_button.pack(side=LEFT)
+        self.animated_slider_value_index = 0
+        self.animated_slider_values = [1, 2, 4, 8, 4, 2]
+        self.is_animating = False
+        # text box for frame rate
+        self.frame_rate_frame = Frame(self.user_options_frame)
+        self.frame_rate_frame.pack(side=LEFT)
+        self.frame_rate_title = Label(self.frame_rate_frame, text="Frame Rate", font=self.font)
+        self.frame_rate_title.pack(side=LEFT)
+        self.frame_rate_slider = Scale(self.frame_rate_frame, from_=1, to=60, orient=HORIZONTAL, command=lambda x: self.update_frame_rate())
+        self.frame_rate_slider.pack(side=LEFT)
+        
+    def update_frame_rate(self):
+        # pull the frame from the slider
+        self.frame_rate = self.frame_rate_slider.get()
+        
+    def animate(self):
+        # toggle the state
+        self.is_animating = not self.is_animating
+        
+        if self.is_animating:
+            self.animate_button.config(text="Stop", bg="red")
+            self.update_frame_rate()
+            self.animated_slider_value_index = 0
+            self.next_frame()
+        else:
+            self.animate_button.config(text="Animate", bg="green")
+        
+    def next_frame(self):
+        self.update_frame_rate()
+        #print("Next Frame")
+        # animate the slider on a timer
+        self.animated_slider_value = self.animated_slider_values[self.animated_slider_value_index]
+        self.settings_count_per_color.set(self.animated_slider_value)
+        self.animated_slider_value_index += 1
+        if self.animated_slider_value_index >= len(self.animated_slider_values):
+            self.animated_slider_value_index = 0
+        self.convert()
+        if self.is_animating:
+            self.root.after(int(1000 / self.frame_rate), self.next_frame)
+     
     def create_input_text_display(self, parent, alignment=TOP):
         self.input_display_frame = Frame(parent)
         self.input_display_frame.pack(side=alignment)
@@ -123,7 +163,7 @@ class TextEditor:
         self.settings_strategy_variable.trace_add("write", self.strategy_changed)
         self.settings_selector = OptionMenu(self.paint_settings_frame, self.settings_strategy_variable, *self.palette_modifier_settings.strategy_options)
         self.settings_selector.pack()
-        self.settings_count_per_color = Scale(self.paint_settings_frame, from_=1, to=30, orient=HORIZONTAL, label="Count per Color", command=lambda x: self.handle_slider_update(x))
+        self.settings_count_per_color = Scale(self.paint_settings_frame, from_=1, to=32, orient=HORIZONTAL, label="Count per Color", command=lambda x: self.handle_slider_update(x))
         self.settings_count_per_color.pack()
         self.add_reverse_palette_button = Button(self.paint_settings_frame, text="Add Reverse Palette", command=self.add_reverse_palette)
         self.add_reverse_palette_button.pack()        
