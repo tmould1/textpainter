@@ -1,0 +1,410 @@
+{
+    "grey_and_red": {
+        "settings": {
+            "count_per_color": 1
+        },
+        "colors": [
+            "#a0a0a0",
+            "#ff0000"
+        ]
+    },
+    "bard_thalia_wit": {
+        "settings": {
+            "count_per_color": 2
+        },
+        "colors": [
+            "#950000",
+            "#ff0000",
+            "#ffffff",
+            "#c0c0c0"
+        ]
+    },
+    "bard_thalia_extended": {
+        "settings": {
+            "count_per_color": 1,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#950000",
+            "#ca0000",
+            "#ff0000",
+            "#ff3333",
+            "#ffffff",
+            "#dfdfdf",
+            "#c0c0c0",
+            "#b6b6b6"
+        ]
+    },
+    "paint_over_full_text": {
+        "settings": {
+            "count_per_color": 1,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#a0a0a0",
+            "#800040"
+        ]
+    },
+    "paint_per_word": {
+        "settings": {
+            "count_per_color": 1,
+            "strategy": "Paint Per Word"
+        },
+        "colors": [
+            "#a0a0a0",
+            "#800040"
+        ]
+    },
+    "paint2": {
+        "settings": {
+            "count_per_color": 1,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#a0a0a0",
+            "#800040"
+        ]
+    },
+    "bard_stars": {
+        "settings": {
+            "count_per_color": 1,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#4a9595",
+            "#00ffff",
+            "#ffffff",
+            "#00ffff",
+            "#4a9595"
+        ]
+    },
+    "bard_stars_stripe": {
+        "settings": {
+            "count_per_color": 1,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#ffffff",
+            "#00ffff",
+            "#4a9595",
+            "#ffffff",
+            "#00ffff",
+            "#458989"
+        ]
+    },
+    "bard_thalia_extended_more": {
+        "settings": {
+            "count_per_color": 1,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#7d0000",
+            "#b70000",
+            "#ff0000",
+            "#ff3333",
+            "#ffffff",
+            "#bfbfbf",
+            "#7c7c7c",
+            "#575757"
+        ]
+    },
+    "sad": {
+        "settings": {
+            "count_per_color": 1,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#7d0000",
+            "#b70000",
+            "#ff0000",
+            "#ff3333",
+            "#ffffff",
+            "#bfbfbf",
+            "#7c7c7c",
+            "#575757"
+        ]
+    },
+    "asdasd": {
+        "settings": {
+            "count_per_color": 1,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#7d0000",
+            "#b70000",
+            "#ff0000",
+            "#ff3333",
+            "#ffffff",
+            "#bfbfbf",
+            "#7c7c7c",
+            "#575757"
+        ]
+    },
+    "bard_pot_lament": {
+        "settings": {
+            "count_per_color": 1,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#ffff00",
+            "#8c8c00"
+        ]
+    },
+    "bard_pot_lament_1": {
+        "settings": {
+            "count_per_color": 1,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#ffff00",
+            "#8c8c00",
+            "#608386",
+            "#959d9d"
+        ]
+    },
+    "bard_pot_hero_1": {
+        "settings": {
+            "count_per_color": 1,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#2c7eda",
+            "#0fb4d0",
+            "#75a92e",
+            "#d9d13e",
+            "#d1970e",
+            "#da3005",
+            "#d1970e",
+            "#d9d13e",
+            "#75a92e",
+            "#0fb4d0",
+            "#2c7eda"
+        ]
+    },
+    "bard_pot_hero": {
+        "settings": {
+            "count_per_color": 1,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#da3005",
+            "#00ff00",
+            "#00ffff",
+            "#ffff00",
+            "#ff00ff"
+        ]
+    },
+    "bard_hero_2": {
+        "settings": {
+            "count_per_color": 2,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#ffff00",
+            "#ff8040",
+            "#ff0000"
+        ]
+    },
+    "bard_hero_2a": {
+        "settings": {
+            "count_per_color": 3,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#ffff00",
+            "#b3b300",
+            "#ffff00",
+            "#ff8000",
+            "#c16100",
+            "#ff8000",
+            "#ff0000",
+            "#8a0000",
+            "#ff0000"
+        ]
+    },
+    "bard_hero_3": {
+        "settings": {
+            "count_per_color": 3,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#ff0000",
+            "#fa4f05",
+            "#ff8000",
+            "#fbbd04",
+            "#ffff00"
+        ]
+    },
+    "bard_pot_lament_3": {
+        "settings": {
+            "count_per_color": 3,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#ff0000",
+            "#fe366d",
+            "#fa63a3",
+            "#f991ca",
+            "#fc6ddf",
+            "#ff4ff2",
+            "#ff2dda"
+        ]
+    },
+    "bard_pot_melody_1": {
+        "settings": {
+            "count_per_color": 3,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#0000ff",
+            "#000091",
+            "#0000ff",
+            "#00ff00",
+            "#009d00",
+            "#00ff00"
+        ]
+    },
+    "bard_pot_melody": {
+        "settings": {
+            "count_per_color": 3,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#0000ff",
+            "#00ff00"
+        ]
+    },
+    "bard_pot_melody_3": {
+        "settings": {
+            "count_per_color": 3,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#00ff00",
+            "#78fc61",
+            "#b9fa92",
+            "#bafc61",
+            "#d2fb57",
+            "#f0fd55",
+            "#ffff00"
+        ]
+    },
+    "bard_pot_melody_2": {
+        "settings": {
+            "count_per_color": 3,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#00ff00",
+            "#78fc61",
+            "#b9fa92",
+            "#bafc61",
+            "#d2fb57",
+            "#f0fd55",
+            "#ffff00"
+        ]
+    },
+    "bard_pot_traveller": {
+        "settings": {
+            "count_per_color": 3,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#00ff00",
+            "#008000"
+        ]
+    },
+    "bard_pot_traveller_2": {
+        "settings": {
+            "count_per_color": 3,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#0000ff",
+            "#2641f9",
+            "#648df9",
+            "#89befa",
+            "#74d7fc",
+            "#3de1fe",
+            "#00ffff"
+        ]
+    },
+    "bard_pot_ballad": {
+        "settings": {
+            "count_per_color": 3,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#bb00bb",
+            "#ff00ff",
+            "#c0c0c0",
+            "#ffffff"
+        ]
+    },
+    "bard_pot_ballad_2": {
+        "settings": {
+            "count_per_color": 3,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#ffff00",
+            "#fbcd42",
+            "#fba76f",
+            "#fd6c53",
+            "#ff4024"
+        ]
+    },
+    "bard_pot_key": {
+        "settings": {
+            "count_per_color": 3,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#0000a8",
+            "#0000ff",
+            "#0080c0",
+            "#00ffff",
+            "#c0c0c0",
+            "#00ffff",
+            "#0080c0",
+            "#0000ff"
+        ]
+    },
+    "bard_pot_key_1": {
+        "settings": {
+            "count_per_color": 3,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#00ffff",
+            "#32fabe",
+            "#6ffbbf",
+            "#51fd96",
+            "#33ff42"
+        ]
+    },
+    "bard_pot_hero_4": {
+        "settings": {
+            "count_per_color": 3,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#ff00ff",
+            "#d676fa",
+            "#ba92fe",
+            "#481cfb",
+            "#0000ff"
+        ]
+    },
+    "christmas_6_test": {
+        "version": 1,
+        "settings": {
+            "count_per_color": 6,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#008000",
+            "#ff0000"
+        ]
+    }
+}
