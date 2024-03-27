@@ -1,15 +1,12 @@
 {
     "grey_and_red": {
-        "version": 2,
-        "layer_one": {
-            "settings": {
-                "count_per_color": 1
-            },
-            "colors": [
-                "#a0a0a0",
-                "#ff0000"
-            ]
-        }
+        "settings": {
+            "count_per_color": 1
+        },
+        "colors": [
+            "#a0a0a0",
+            "#ff0000"
+        ]
     },
     "bard_thalia_wit": {
         "settings": {
@@ -49,17 +46,14 @@
         ]
     },
     "paint_per_word": {
-        "version": 2,
-        "layer_one": {
-            "settings": {
-                "count_per_color": 1,
-                "strategy": "Paint Per Word"
-            },
-            "colors": [
-                "#a0a0a0",
-                "#800040"
-            ]
-        }
+        "settings": {
+            "count_per_color": 1,
+            "strategy": "Paint Per Word"
+        },
+        "colors": [
+            "#a0a0a0",
+            "#800040"
+        ]
     },
     "paint2": {
         "settings": {
@@ -72,20 +66,17 @@
         ]
     },
     "bard_stars": {
-        "version": 2,
-        "layer_one": {
-            "settings": {
-                "count_per_color": 1,
-                "strategy": "Paint Over Full Text"
-            },
-            "colors": [
-                "#4a9595",
-                "#00ffff",
-                "#ffffff",
-                "#00ffff",
-                "#4a9595"
-            ]
-        }
+        "settings": {
+            "count_per_color": 1,
+            "strategy": "Paint Over Full Text"
+        },
+        "colors": [
+            "#4a9595",
+            "#00ffff",
+            "#ffffff",
+            "#00ffff",
+            "#4a9595"
+        ]
     },
     "bard_stars_stripe": {
         "settings": {

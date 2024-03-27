@@ -1,0 +1,21 @@
+text painter todo list
+
+Bard Spring Celebration list
+---------------------------
+April 5: Need crumble strings with colors
+
+New tech:
+[ ] 1) Layers for painting, with an ordered list of strategies to use
+ [ ] a) no overlaps
+ [ ] b) with overlaps
+[_] 2) Paint String strategy
+ [o] a) find strings
+  [o] 1) widget for strategy and text field for string strat
+ [ ] b) paint strings, ending with color code from before (if Exists)
+[ ] 3) Nested strategies
+ [ ] a) sub-strategies work on the text that the parent has filtered to paint
+  e.g. "Nesh's Necessary Need \n Mellie's Melodic Melodies"
+    Layer 1: Paint String "Nesh's Necessary Need" -> Green
+     SubLayer 1a: Paint String "Necessary" -> Light Green
+    Layer 2: Paint String "Mellie's Melodic Melodies" -> Gold
+     SubLayer 2a: Paint String "Melodic" -> Yellow

@@ -135,3 +135,20 @@ def test_paint_spaces_edge_case_end_with_space_on_transition():
     assert tags[0][0] == "color_tag_0"
     assert tags[0][1] == "#ff0000"
     assert tags[0][2] == "1.0 1.6"
+
+def test_paint_strategy_for_specific_string():
+    # Arrange
+    text = "The quick brown fox jumps over the lazy dog."
+    color_tags = ["#ff0000"]
+    string_to_color = "jumps"
+    count_per_color = 1
+    text_painter = TextPainter()
+    
+    # Act
+    tags = text_painter.paint_by_strategy(text, color_tags, count_per_color, string_to_color)
+    
+    # Assert
+    assert tags[0][0] == "color_tag_0"
+    assert tags[0][1] == "#ff0000"
+    assert tags[0][2] == "1.20 1.21"
+    assert len(tags) == 5

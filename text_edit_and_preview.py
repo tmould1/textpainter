@@ -1,5 +1,7 @@
 import os
 import json
+import time
+import re
 
 from tkinter import *
 
@@ -7,18 +9,27 @@ from tkinter import colorchooser
 
 from text_painter import TextPainter
 
+from collapsible_frame_container import CollapsiblePane
+
+class CollapsiblePane_Palette(CollapsiblePane):
+    def __init__(self, parent, expanded_text="Collapse <<", collapsed_text="Expand >>"):
+        CollapsiblePane.__init__(self, parent, expanded_text, collapsed_text)
+        self.palette_color_frames_and_buttons = []
+        self.palette_modifier_settings = PaletteLayerSettings()
+
 class TextEditor:
     def __init__(self, root):
         self.palette_window = None
-        self.palette_color_frames_and_buttons = []
 
-        self.palette_storage_info = PaletteSetStorageInfo()
+        self.palette_storage_info = PaletteSetStorageManager()
         self.text_painter = TKinterTextPainter()
-        self.palette_modifier_settings = PaletteLayerSettings()
         
         self.font = ("Courier New", 16)
         self.root = root
         self.root.title("Text Painter")
+        self.paint_refresh_rate = 1
+        self.paint_last_update_time = time.time()
+        self.default_text_color_rgb = "#a0a0a0" # grey
 
         self.input_and_result_frame = Frame(self.root)
         self.input_and_result_frame.pack(side=TOP)
@@ -31,10 +42,29 @@ class TextEditor:
         self.create_button_for_palette_window(self.user_options_frame, LEFT)
         self.create_output_background_selector_button(self.user_options_frame, LEFT)
         
+        ## BEGIN CONVERSION TO LAYERS INSTEAD OF A SINGLE PALETTE FRAME
+        self.palette_color_frames_and_buttons = []
+        self.palette_modifier_settings = PaletteLayerSettings()
+
+        # self.layers_section_frame = Frame(self.input_and_result_frame)
+        # self.layers_section_frame.pack(side=TOP)
+        
+        # self.first_layer_pane = CollapsiblePane_Palette(self.layers_section_frame, "First Layer", "First Layer")
+        # self.first_layer_pane.pack(side=TOP)
+        # self.create_palette(parent=self.first_layer_pane.frame, alignment=TOP)
+        
+        # self.second_layer_pane = CollapsiblePane_Palette(self.layers_section_frame, "Second Layer", "Second Layer")
+        # self.second_layer_pane.pack(side=TOP)
+        # self.create_palette(parent=self.second_layer_pane.frame, alignment=TOP)
+        
+        
         self.palette_frame = Frame(self.input_and_result_frame)
         self.palette_frame.pack(side=TOP)
         self.create_palette(parent=self.palette_frame, alignment=TOP)
         
+        ## END CONVERSION TO LAYERS INSTEAD OF A SINGLE PALETTE FRAME
+        
+        # DELEGATES!
         self.root.bind("<KeyRelease>", self.key_released)
         
         # Experimental Button for animating
@@ -43,7 +73,7 @@ class TextEditor:
         self.animated_slider_value_index = 0
         self.animated_slider_values = [1, 2, 4, 8, 4, 2]
         self.is_animating = False
-        # text box for frame rate
+        # variable to hold the frame rate
         self.frame_rate_frame = Frame(self.user_options_frame)
         self.frame_rate_frame.pack(side=LEFT)
         self.frame_rate_title = Label(self.frame_rate_frame, text="Frame Rate", font=self.font)
@@ -101,16 +131,34 @@ class TextEditor:
         self.convert_button.pack(side=alignment)
         
     def convert(self):
+        convert_request_time = time.time()
+        if convert_request_time - self.paint_last_update_time < self.paint_refresh_rate:
+            #print(f"Skipping paint, last paint was {convert_request_time - self.paint_last_update_time} seconds ago")
+            #print(f"Refresh rate is {self.paint_refresh_rate} seconds")
+            return
+        
         self.output_text.delete(1.0, END)
         # get a list of all the colors from the palette
+        # palette_colors = []
+        # for entry in self.palette_color_frames_and_buttons:
+        #     palette_colors.append(entry[1].cget("text"))
+        # # Clear existing tags
+        # for tag in self.input_text.tag_names():
+        #     self.input_text.tag_delete(tag)
+        # self.text_painter.paint(self.input_text, self.output_text, palette_colors, self.palette_modifier_settings)
+        self.paint_layer(self.first_layer_pane.palette_color_frames_and_buttons, self.first_layer_pane.palette_modifier_settings)
+
+    # args are: Palette set and how to paint that on the text
+    def paint_layer(self, paletee_color_frames_and_buttons, palette_modifier_settings):
+        # get a list of all the colors from the palette
         palette_colors = []
-        for entry in self.palette_color_frames_and_buttons:
+        for entry in paletee_color_frames_and_buttons:
             palette_colors.append(entry[1].cget("text"))
         # Clear existing tags
         for tag in self.input_text.tag_names():
             self.input_text.tag_delete(tag)
-        self.text_painter.paint(self.input_text, self.output_text, palette_colors, self.palette_modifier_settings)
-    
+        self.text_painter.paint(self.input_text, self.output_text, palette_colors, palette_modifier_settings)
+
     def create_button_for_palette_window(self, parent, alignment=TOP):
         self.palette_button = Button(parent, text="Palette Selector", command=self.create_palette)
         self.palette_button.pack(side=alignment)
@@ -158,31 +206,68 @@ class TextEditor:
         # Settings Frame
         self.paint_settings_frame = Frame(parent)
         self.paint_settings_frame.pack(side=RIGHT)
+        self.strategy_frame = Frame(self.paint_settings_frame)
+        self.strategy_frame.pack(side=TOP)
         self.settings_strategy_variable = StringVar()
         self.settings_strategy_variable.set(self.palette_modifier_settings.strategy_options[0])
         self.settings_strategy_variable.trace_add("write", self.strategy_changed)
-        self.settings_selector = OptionMenu(self.paint_settings_frame, self.settings_strategy_variable, *self.palette_modifier_settings.strategy_options)
+        self.settings_selector = OptionMenu(self.strategy_frame, self.settings_strategy_variable, *self.palette_modifier_settings.strategy_options)
         self.settings_selector.pack()
-        self.settings_count_per_color = Scale(self.paint_settings_frame, from_=1, to=32, orient=HORIZONTAL, label="Count per Color", command=lambda x: self.handle_slider_update(x))
+        self.settings_count_per_color = Scale(self.strategy_frame, from_=1, to=32, orient=HORIZONTAL, label="Count per Color", command=lambda x: self.handle_slider_update(x))
         self.settings_count_per_color.pack()
-        self.add_reverse_palette_button = Button(self.paint_settings_frame, text="Add Reverse Palette", command=self.add_reverse_palette)
+        self.add_reverse_palette_button = Button(self.strategy_frame, text="Add Reverse Palette", command=self.add_reverse_palette)
         self.add_reverse_palette_button.pack()        
 
     def strategy_changed(self, *args):
-        self.palette_modifier_settings.set_variable_by_name("strategy", self.settings_strategy_variable.get())
+        old_strategy_name = self.palette_modifier_settings.get_variable_by_name("strategy")
+        new_strategy_name = self.settings_strategy_variable.get()
+        self.palette_modifier_settings.set_variable_by_name("strategy", new_strategy_name)
+        
+        if old_strategy_name != new_strategy_name:
+            # Change detected
+            # Hack, move additional UI elements per strategy to a strategy object method. atm, we only track string names, but we need functionality here
+            self.strategy_frame.pack_forget()
+            self.strategy_frame.pack()
+            if old_strategy_name == "Paint String":
+                self.strategy_parameter_entry.unbind("<KeyRelease>")
+                self.strategy_parameter_frame.pack_forget()
+            self.settings_count_per_color.pack_forget()
+            self.add_reverse_palette_button.pack_forget()
+            
+            self.settings_selector.pack()
+            if new_strategy_name == "Paint String":
+                # add a new label and text input to capture the string to paint
+                self.strategy_parameter_frame = Frame(self.strategy_frame)
+                self.strategy_parameter_frame.pack()
+                self.strategy_parameter_label = Label(self.strategy_parameter_frame, text="String to Paint")
+                self.strategy_parameter_label.pack(side=LEFT)
+                self.strategy_parameter_entry = Entry(self.strategy_parameter_frame)
+                self.strategy_parameter_entry.insert(0, self.palette_modifier_settings.get_variable_by_name("string_to_paint"))
+                self.strategy_parameter_entry.pack(side=RIGHT)
+                            
+            self.settings_count_per_color.pack()
+            self.add_reverse_palette_button.pack()
+             
+        self.convert()
+
+    def string_to_paint_changed(self, *args):
+        string_to_paint = self.strategy_parameter_entry.get()
+        self.palette_modifier_settings.set_variable_by_name("string_to_paint", string_to_paint)
         self.convert()
 
     def handle_slider_update(self, value):
         self.palette_modifier_settings.set_variable_by_name("count_per_color", int(value))
         self.convert()
 
-    def add_color(self):
+    def add_color(self, parent=None):
         color_code = colorchooser.askcolor()
         if color_code[1]:
-            self.do_add_color(color_code[1])
+            self.do_add_color(color_code[1], parent)
             
-    def do_add_color(self, color_code):
-        button_frame = Frame(self.palette_frame)
+    def do_add_color(self, color_code, parent=None):
+        if parent is None:
+            parent = self.palette_frame
+        button_frame = Frame(parent)
         color_button = Button(button_frame, text=color_code, bg=color_code, command=lambda: self.edit_color(button_frame))
         if self.does_color_need_bright_text(color_code):
             color_button.config(fg="white")
@@ -273,7 +358,9 @@ class TextEditor:
         else:
             return True
 
-    def save_palette(self):
+    def save_palette(self, parent = None):
+        if parent is None:
+            parent = self.palette_window
         colors_in_palette = []
         for entry in self.palette_color_frames_and_buttons:
             colors_in_palette.append(entry[1].cget("text"))
@@ -310,7 +397,7 @@ class TextEditor:
         if self.palette_window is not None:
             self.palette_window.deiconify()
         
-    def load_palette(self):
+    def load_palette(self, parent=None):
         self.load_palette_window = Toplevel(self.palette_window)
         self.load_palette_window.title("Load Palette")
         directions_textbox = Text(self.load_palette_window, wrap=WORD)
@@ -322,13 +409,13 @@ class TextEditor:
             listbox_of_existing_palettes.insert(END, palette_name)
         user_interaction_frame = Frame(self.load_palette_window)
         user_interaction_frame.pack(side = BOTTOM)
-        load_palette_button = Button(user_interaction_frame, text="Load", command=lambda: self.do_load_palette(listbox_of_existing_palettes.get(ACTIVE)))
+        load_palette_button = Button(user_interaction_frame, text="Load", command=lambda: self.do_load_palette(listbox_of_existing_palettes.get(ACTIVE), parent))
         load_palette_button.pack()
     
-    def do_load_palette(self, palette_name):
+    def do_load_palette(self, palette_name, parent=None):
         palette_data = self.palette_storage_info.load_palette_set(palette_name)
-        palette_colors = palette_data["colors"]
-        palette_settings = palette_data["settings"]
+        palette_colors = palette_data["layer_one"]["colors"]
+        palette_settings = palette_data["layer_one"]["settings"]
         
         if palette_colors is None:
             # clear the tags in the window
@@ -363,7 +450,7 @@ class TextEditor:
         self.convert()
         self.palette_name_label.config(text=palette_name)
 
-    def clear_palette(self):
+    def clear_palette(self, parent=None):
         self.are_you_sure_window = Toplevel(self.palette_window)
         self.are_you_sure_window.title("Are you sure?")
         are_you_sure_label = Label(self.are_you_sure_window, text="Are you sure you want to clear the palette?")
@@ -403,10 +490,15 @@ class TextEditor:
             focused_window = self.root.focus_get()
             focused_window.destroy()
         else:
+            self.update_string_variable_fields()
             self.convert()
+            
+    def update_string_variable_fields(self):
+        if self.palette_modifier_settings.get_variable_by_name("strategy") == "Paint String":
+            self.palette_modifier_settings.set_variable_by_name("string_to_paint", self.strategy_parameter_entry.get())
 
 # Converting from Palette to Palette Set.
-class PaletteSetStorageInfo:
+class PaletteSetStorageManager:
     def __init__(self):
         self.palette_set_save_file = "palette_save.json"
         self.palette_set_save = {}
@@ -432,7 +524,38 @@ class PaletteSetStorageInfo:
         return True
     
     def load_palette_set(self, palette_set_name):
-        return self.palette_set_save[palette_set_name]
+        palette_set = self.palette_set_save[palette_set_name]
+        
+        # if it doesn't contain the "version" entry, add it and set to 0
+        if "version" not in palette_set:
+            palette_set["version"] = 0
+        
+        # if the version is less than the current version, update the palette set
+        # At Version 1: we added the version number
+        palette_version = palette_set["version"]
+        needs_resave_from_version_update = False
+        if palette_version == 0:
+            # update the palette set to version 1
+            palette_version = 1
+            needs_resave_from_version_update = True
+        # At Version 2: we added layers support. each current entry should be wrapped in "layer_one"
+        if palette_version == 1:
+            # update the palette set to version 2
+            palette_version = 2
+            palette_set["layer_one"] = {}
+            palette_set["layer_one"]["settings"] = palette_set["settings"]
+            palette_set["layer_one"]["colors"] = palette_set["colors"]
+            del palette_set["settings"]
+            del palette_set["colors"]
+            needs_resave_from_version_update = True
+                
+        # Once done updating, update version number and dump json
+        if needs_resave_from_version_update:
+            palette_set["version"] = palette_version
+            with open(self.palette_set_save_file, "w") as file:
+                json.dump(self.palette_set_save, file, indent=4)
+        
+        return palette_set
     
     def get_all_palette_sets(self):
         return self.palette_set_save
@@ -451,6 +574,7 @@ class PaletteLayerSettings:
         self.settings_data = {}
         self.settings_data["count_per_color"] = 1
         self.settings_data["strategy"] = self.strategy_options[0]
+        self.settings_data["string_to_paint"] = ""
 
     def get_variable_by_name(self, name):
         if name in self.settings_data:
@@ -468,9 +592,34 @@ class TKinterTextPainter:
     def __init__(self):
         pass
         
-    def paint(self, input_text_object, output_text_object, palette_colors, palette_modifier_settings):       
-        raw_text = input_text_object.get(1.0, END)
-        length_of_text = len(raw_text) - 1 # -1 for the newline character at the end of the text
+    def paint(self, input_text_object, output_text_object, palette_colors, palette_modifier_settings):
+        full_raw_text = input_text_object.get(1.0, END)
+
+        # transfer the raw text to the output text, no paint yet (Output window will become window with XTerm tags embedded, no color)
+        output_text_object.insert(END, full_raw_text)
+
+        text_to_paint = full_raw_text
+        string_to_paint = None
+        
+        # For each layer stuff will go here...
+        # For each strategy, depth first...
+        current_strategy = palette_modifier_settings.get_variable_by_name("strategy")
+        
+        
+        
+        if current_strategy == "Paint String":
+            string_to_paint = palette_modifier_settings.get_variable_by_name("string_to_paint")
+            # find first match to paint
+            match = re.search(string_to_paint, full_raw_text) # Might not work across new lines?
+            if match is None:
+                text_to_paint = match.group(0)
+                
+            print(f"String to paint: {string_to_paint} text to paint: {text_to_paint}")
+                           
+                           
+                           
+                           
+        length_of_text = len(text_to_paint) - 1 # -1 for the newline character at the end of the text
         count_per_color = palette_modifier_settings.get_variable_by_name("count_per_color")
         number_of_tags_needed = length_of_text // count_per_color
         if length_of_text % count_per_color > 0:
@@ -478,7 +627,7 @@ class TKinterTextPainter:
         
         if len(palette_colors) < 1:
             # put input into output as is
-            output_text_object.insert(END, raw_text)
+            output_text_object.insert(END, text_to_paint)
             return
         
         #print("Number of tags needed: " + str(number_of_tags_needed))
@@ -486,22 +635,13 @@ class TKinterTextPainter:
         for i in range(number_of_tags_needed):
             tag_color = palette_colors[i % len(palette_colors)]
             color_tags.append(tag_color)
-
-        # transfer the raw text to the output text
-        output_text_object.insert(END, raw_text)
-        
-        # Build a 2D array of characters, by line and column
-        #  and then iterate through the array to add tags to the output text
-        #  based on the line and column indices
-        #  and the color tags
-        character_matrix = []
-        for line in raw_text.split("\n"):
-            character_matrix.append(list(line))
         
         text_painter = TextPainter()
         #print("Count per color: " + str(count_per_color))
-        tags = text_painter.paint(character_matrix, color_tags, count_per_color)
+        tags = text_painter.paint_by_strategy(full_raw_text, color_tags, count_per_color, string_to_paint)
         
+        # take the results from the text painter and apply the colors to the TK text object
+        last_end_marker = END
         for tag in tags:
             tag_id = tag[0]
             color = tag[1]
@@ -513,6 +653,14 @@ class TKinterTextPainter:
             #output_text_object.tag_add(tag_id, start_marker, end_marker)
             input_text_object.tag_config(tag_id, foreground=color)
             input_text_object.tag_add(tag_id, start_marker, end_marker)
+            last_end_marker = end_marker
+            
+        # add default color tag at the end of the text to prevent color bleeding
+        input_text_object.tag_config("default", foreground="#a0a0a0")
+        input_text_object.tag_add("default", last_end_marker, END)
+        
+        # for tag in tags:
+        #     print(f"Tag: {tag}  Color: {tag[1]}     Start: {tag[2].split(' ')[0]}     End: {tag[2].split(' ')[1]}")
 
 
 if __name__ == "__main__":
